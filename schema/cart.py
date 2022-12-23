@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class Cake(BaseModel):
+class Cart(BaseModel):
     id: int
     user_profile_id: int
     cake_id: int

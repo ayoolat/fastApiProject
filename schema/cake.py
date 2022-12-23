@@ -14,3 +14,4 @@ class Cake(BaseModel):
     name: str
     price: int
     size: Size
+    image: str

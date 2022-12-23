@@ -7,5 +7,6 @@ class Cake(Base):
     __tablename__ = "cakes"
 
     id = Column(Integer, primary_key=True)
-    title = Column(String(50))
-    body = Column(String(50))
+    name = Column(String(50))
+    price = Column(Integer)
+    size = Column(String(50))

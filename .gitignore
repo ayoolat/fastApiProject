@@ -1,0 +1,63 @@
+# Python cache files
+__pycache__/
+*.pyc
+
+# FastAPI files
+.openapi-spec.json
+.fastapi-token
+
+# Environment files
+.env
+
+# SQLite database file
+*.sqlite
+
+# MySQL database files
+*.mysql
+
+# PostgreSQL database files
+*.postgresql
+
+# MongoDB database files
+*.mongodb
+
+# SQLAlchemy migration files
+migrations/
+versions/
+
+# Log files
+*.log
+
+# PyTest reports
+*.xml
+
+# PyTest coverage reports
+.coverage
+htmlcov/
+
+# PyTest cache
+.cache
+
+# VSCode files
+.vscode/
+
+# Flask debug toolbar
+flask_debugtoolbar/
+
+# Mypy type checking files
+.mypy_cache/
+
+# PyInstaller files
+*.spec
+build/
+dist/
+
+# Black formatting files
+*.orig
+
+# Poetry lock file
+poetry.lock
+
+# Firebase config files
+firebase-config.json
+firebase-json.json
