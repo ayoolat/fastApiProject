@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Enum
 
 from database.database import Base
+from schema.cake import Size
 
 
 class Cake(Base):
@@ -9,4 +10,4 @@ class Cake(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
     price = Column(Integer)
-    size = Column(String(50))
+    size = Column(Enum(Size))

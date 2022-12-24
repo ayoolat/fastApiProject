@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from pyrebase.pyrebase import Auth
 from sqlalchemy.orm import Session
 from starlette import status
 

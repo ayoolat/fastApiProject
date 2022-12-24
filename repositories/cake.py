@@ -7,15 +7,15 @@ from services.cake.updateCake import CakeUpdate
 
 
 async def add_cake(payload: cake.Cake, db: Session):
-    new_cake = await Cake(name=payload.title, price=payload.price, size=payload.size)
+    new_cake = Cake(name=payload.name, price=payload.price, size=payload.size)
     db.add(new_cake)
     db.commit()
     db.refresh(new_cake)
     return new_cake
 
 
-async def get_all_cakes(db: Session, skip: int = 1, limit: int = 10):
-    cakes = await db.query(Cake).offset(skip).limit(limit).all()
+async def get_all_cakes(db: Session, skip: int, limit: int):
+    cakes = db.query(Cake).offset(skip).limit(limit).all()
     return cakes
 
 

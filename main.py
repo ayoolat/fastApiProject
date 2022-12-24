@@ -9,7 +9,8 @@ from database.database import engine
 
 from firebase_admin import credentials, initialize_app
 
-from services.auth import router
+from services.auth import auth_router
+from services.cake import cake_router
 from cli import app as cli
 
 cred = credentials.Certificate("./firebase-json.json")
@@ -31,6 +32,7 @@ cart.Base.metadata.create_all(engine)
 order.Base.metadata.create_all(engine)
 user.Base.metadata.create_all(engine)
 
-app.include_router(router.router)
+app.include_router(auth_router.router)
+app.include_router(cake_router.router)
 
 if __name__ == '__main__': cli()
