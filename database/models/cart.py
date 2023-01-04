@@ -10,7 +10,7 @@ class Cart(Base):
     id = Column(Integer, primary_key=True)
     paid = Column(Boolean, default=False)
     delivered = Column(Boolean, default=False)
-    quantity = Column(Integer)
+    quantity = Column(Integer, nullable=False)
     cake_id = Column(Integer, ForeignKey("cakes.id"))
     user_profile_id = Column(Integer, ForeignKey("users.id"))
 

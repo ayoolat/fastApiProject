@@ -7,7 +7,7 @@ from services.cake.updateCake import CakeUpdate
 
 
 async def add_cake(payload: cake.Cake, db: Session):
-    new_cake = Cake(name=payload.name, price=payload.price, size=payload.size)
+    new_cake = Cake(name=payload.name, price=payload.price, size=payload.size, image=payload.image)
     db.add(new_cake)
     db.commit()
     db.refresh(new_cake)
@@ -15,8 +15,14 @@ async def add_cake(payload: cake.Cake, db: Session):
 
 
 async def get_all_cakes(db: Session, skip: int, limit: int):
-    cakes = db.query(Cake).offset(skip).limit(limit).all()
+    cakes = db.query(Cake).offset(limit * (skip - 1)).limit(limit).all()
+    print(cakes)
     return cakes
+
+
+async def count_all_cakes(db: Session):
+    number = db.query(Cake).count()
+    return number
 
 
 async def get_one_cake(db: Session, id: int):

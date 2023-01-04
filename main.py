@@ -9,6 +9,7 @@ from database.database import engine
 
 from firebase_admin import credentials, initialize_app
 
+from middlewares.errorHandler import catch_exceptions_middleware
 from services.auth import auth_router
 from services.cake import cake_router
 from cli import app as cli
@@ -26,6 +27,7 @@ app.add_middleware(
     allow_methods=allow_all,
     allow_headers=allow_all
 )
+app.middleware('http')(catch_exceptions_middleware)
 
 cake.Base.metadata.create_all(engine)
 cart.Base.metadata.create_all(engine)

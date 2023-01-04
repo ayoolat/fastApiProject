@@ -8,6 +8,7 @@ class Cake(Base):
     __tablename__ = "cakes"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(50))
-    price = Column(Integer)
-    size = Column(Enum(Size))
+    name = Column(String(50), nullable=False)
+    price = Column(Integer, nullable=False)
+    size = Column(Enum(Size), nullable=False)
+    image = Column(String(200), unique=True, nullable=False)
