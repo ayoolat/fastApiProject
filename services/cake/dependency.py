@@ -7,9 +7,11 @@ import aiofiles
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.orm import Session
 
-from repositories.cake import add_cake, get_one_cake, get_all_cakes, count_all_cakes
+from repositories.cake import add_cake, get_one_cake, get_all_cakes, count_all_cakes, count_cake, cake_update, \
+    cake_delete
 from schema import cake
 from schema.response import PagedList
+from services.cake.updateCake import CakeUpdate
 from services.cake.upload import upload_to_aws
 from services.respond import Respond
 
@@ -48,7 +50,36 @@ async def upload_cake_image(file: UploadFile):
 
 async def get_cake(id: int, db: Session):
     cake_object = await get_one_cake(db, id)
-    return cake_object
+    respond = Respond[cake.Cake]()
+    return respond.response(
+        body=cake_object,
+        code=200,
+        message="Cake query successful"
+    )
+
+
+async def update_cake(payload: CakeUpdate, db: Session):
+    if payload.name is not None:
+        payload.name = capitalize_words(payload.name)
+    cake_object = await cake_update(db, payload)
+    respond = Respond[cake.Cake]()
+    return respond.response(
+        body=cake_object,
+        code=200,
+        message="Cake query successful"
+    )
+
+
+async def delete_cake(payload: CakeUpdate, db: Session):
+    await count_cake(db, payload.id)
+    cake_object = await cake_delete(db, payload.id)
+    print(cake_object)
+    respond = Respond[bool]()
+    return respond.response(
+        body=True,
+        code=200,
+        message="Cake successfully deleted"
+    )
 
 
 async def get_all_cake(db: Session, skip: int, limit: int):

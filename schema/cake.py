@@ -10,7 +10,6 @@ class Size(enum.Enum):
 
 
 class Cake(BaseModel):
-    id: int
     name: str
     price: int
     size: Size

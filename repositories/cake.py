@@ -25,26 +25,35 @@ async def count_all_cakes(db: Session):
     return number
 
 
+async def count_cake(db: Session, id: int):
+    number = db.query(Cake).filter(Cake.id == id).count()
+    print(number)
+    if number > 0:
+        return True
+    raise HTTPException(status_code=404, detail="Cake not found")
+
+
 async def get_one_cake(db: Session, id: int):
-    cake = await db.query(Cake).filter(Cake.id == id).first()
-    if not cake:
+    cake_returned = db.query(Cake).filter(Cake.id == id).first()
+    if not cake_returned:
         raise HTTPException(status_code=404, detail="Cake not found")
-    return cake
+    return cake_returned
 
 
-async def update_cake(db: Session, payload: CakeUpdate):
-    cake = await get_one_cake(db, payload.id)
+async def cake_update(db: Session, payload: CakeUpdate):
+    cake_returned = await get_one_cake(db, payload.id)
     cake_data = payload.dict(exclude_unset=True)
     for key, value in cake_data.items():
-        setattr(cake, key, value)
-    db.add(payload)
+        setattr(cake_returned, key, value)
+
+    db.add(cake_returned)
     db.commit()
-    db.refresh(payload)
-    return payload
+    db.refresh(cake_returned)
+    return cake_data
 
 
-async def delete_cake(db: Session, id: int):
-    cake = await get_one_cake(db, id)
-    db.delete(cake)
+async def cake_delete(db: Session, id: int):
+    cake_returned = await get_one_cake(db, id)
+    db.delete(cake_returned)
     db.commit()
     return True
