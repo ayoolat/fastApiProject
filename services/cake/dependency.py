@@ -73,7 +73,6 @@ async def update_cake(payload: CakeUpdate, db: Session):
 async def delete_cake(payload: CakeUpdate, db: Session):
     await count_cake(db, payload.id)
     cake_object = await cake_delete(db, payload.id)
-    print(cake_object)
     respond = Respond[bool]()
     return respond.response(
         body=True,

@@ -13,6 +13,7 @@ from middlewares.errorHandler import catch_exceptions_middleware
 from services.auth import auth_router
 from services.cake import cake_router
 from cli import app as cli
+from services.cart import cart_router
 
 cred = credentials.Certificate("./firebase-json.json")
 initialize_app(cred)
@@ -36,5 +37,6 @@ user.Base.metadata.create_all(engine)
 
 app.include_router(auth_router.router)
 app.include_router(cake_router.router)
+app.include_router(cart_router.router)
 
 if __name__ == '__main__': cli()

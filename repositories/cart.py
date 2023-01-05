@@ -1,15 +1,15 @@
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from schema.cart import Cart
+from services.cart.cartDto import CartDto
 
 
-async def add_to_cart(payload: Cart, db: Session):
+async def add_to_cart(payload: CartDto, db: Session):
     new_cart = Cart(
         cake_id=payload.cake_id,
         user_profile_id=payload.user_profile_id,
         paid=False,
-        delivered=payload.delivered,
+        delivered=False,
         quantity=payload.quantity
     )
     db.add(new_cart)
