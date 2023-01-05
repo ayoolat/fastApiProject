@@ -1,12 +1,14 @@
 from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from firebase_admin import auth
+from googleapiclient.errors import HttpError
 from sqlalchemy.orm import Session
 
 from schema.user import User
 from services.auth.loginSchema import Login
 from services.auth.registerSchema import Register
 from database.database import get_db
-from repositories.user import create
+from repositories.user import create, get_by_user_id
 
 import pyrebase
 import json
@@ -31,3 +33,14 @@ async def logs_in_user(login_payload: Login):
         return login_user
     except Exception as e:
         raise HTTPException(detail=e.__str__(), status_code=400)
+
+
+async def firebase_authentication(token: HTTPAuthorizationCredentials = Depends(HTTPBearer())
+                                  , db: Session = Depends(get_db)
+                                ) -> dict:
+    try:
+        user = pb.auth().get_account_info(token.credentials)
+        db_user = get_by_user_id(user.get("users")[0].get("localId"), db)
+        return db_user
+    except:
+        raise HTTPException(detail="Invalid token", status_code=401)
