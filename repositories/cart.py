@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from schema.cart import Cart
 from services.cart.cartDto import CartDto
+from database.models.cart import Cart
 
 
 async def add_to_cart(payload: CartDto, db: Session):
@@ -19,12 +19,14 @@ async def add_to_cart(payload: CartDto, db: Session):
 
 
 async def get_current_cart(db: Session, skip: int, limit: int, user_profile_id: int):
-    cakes = db.query(Cart) \
-        .filter(Cart.paid == False, Cart.user_profile_id == user_profile_id) \
-        .offset(limit * (skip - 1)) \
+    cart = db.query(Cart)\
+        .filter(Cart.paid is False)\
+        .filter( Cart.user_profile_id == "")\
+        .offset(limit * (skip - 1))\
         .limit(limit)\
         .all()
-    return cakes
+    print(cart)
+    return cart
 
 
 async def clear_cart(db: Session, user_profile_id: int):
