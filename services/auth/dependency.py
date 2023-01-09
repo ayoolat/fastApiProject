@@ -1,3 +1,5 @@
+from typing import Any, Coroutine
+
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from firebase_admin import auth
@@ -12,6 +14,8 @@ from repositories.user import create, get_by_user_id
 
 import pyrebase
 import json
+
+from services.respond import Respond
 
 pb = pyrebase.initialize_app(json.load(open("./firebase-config.json")))
 
@@ -35,9 +39,19 @@ async def logs_in_user(login_payload: Login):
         raise HTTPException(detail=e.__str__(), status_code=400)
 
 
-async def firebase_authentication(token: HTTPAuthorizationCredentials = Depends(HTTPBearer())
+async def get_user(user_id: str, db: Session):
+    user = get_by_user_id(user_id, db)
+    respond = Respond[User]()
+    return respond.response(
+        body=user,
+        code=200,
+        message="User query successfully"
+    )
+
+
+def firebase_authentication(token: HTTPAuthorizationCredentials = Depends(HTTPBearer())
                                   , db: Session = Depends(get_db)
-                                ) -> dict:
+                                ) -> Coroutine[Any, Any, Any]:
     try:
         user = pb.auth().get_account_info(token.credentials)
         db_user = get_by_user_id(user.get("users")[0].get("localId"), db)
