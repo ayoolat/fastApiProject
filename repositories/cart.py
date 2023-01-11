@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from services.cart.cartDto import CartDto
@@ -34,6 +35,8 @@ async def remove_cake(db: Session, cart_id: int, user_profile_id: int):
         .filter(Cart.paid == False)\
         .filter(Cart.id == cart_id)\
         .first()
+    if not cart:
+        raise HTTPException(status_code=404, detail="Cart item not found")
     db.delete(cart)
     db.commit()
     return True
@@ -55,6 +58,7 @@ async def mark_as_paid(db: Session, user_profile_id: int):
         .filter(Cart.user_profile_id == user_profile_id)\
         .filter(Cart.paid == False)\
         .all()
+
     for cart in carts:
         cart.paid = True
         cart_update(db, cart)

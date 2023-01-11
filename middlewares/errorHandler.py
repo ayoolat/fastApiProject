@@ -6,7 +6,9 @@ from starlette.responses import Response
 
 async def catch_exceptions_middleware(request: Request, call_next):
     try:
-        return await call_next(request)
+        response = await call_next(request)
+        return response
+    except HTTPException as e:
+        return e
     except Exception as e:
-        print(str(e))
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal Server Error")
