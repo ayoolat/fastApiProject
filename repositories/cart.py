@@ -29,6 +29,25 @@ async def get_current_cart(db: Session, skip: int, limit: int, user_profile_id: 
     return cart
 
 
+async def get_completed_orders(db: Session, skip: int, limit: int, user_profile_id: int):
+    cart = db.query(Cart)\
+        .filter(Cart.user_profile_id == user_profile_id)\
+        .filter(Cart.delivered == True)\
+        .offset(limit * (skip - 1))\
+        .limit(limit)\
+        .all()
+    return cart
+
+
+async def get_all_orders(db: Session, skip: int, limit: int, user_profile_id: int):
+    cart = db.query(Cart) \
+        .filter(Cart.user_profile_id == user_profile_id) \
+        .offset(limit * (skip - 1)) \
+        .limit(limit) \
+        .all()
+    return cart
+
+
 async def remove_cake(db: Session, cart_id: int, user_profile_id: int):
     cart = db.query(Cart)\
         .filter(Cart.user_profile_id == user_profile_id)\
@@ -61,6 +80,19 @@ async def mark_as_paid(db: Session, user_profile_id: int):
 
     for cart in carts:
         cart.paid = True
+        cart_update(db, cart)
+    db.commit()
+    return True
+
+
+async def mark_as_delivered(db: Session, user_profile_id: int):
+    carts = db.query(Cart)\
+        .filter(Cart.user_profile_id == user_profile_id)\
+        .filter(Cart.delivered == False)\
+        .all()
+
+    for cart in carts:
+        cart.delivered = True
         cart_update(db, cart)
     db.commit()
     return True

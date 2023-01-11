@@ -1,6 +1,7 @@
 from boto3 import Session
 
-from repositories.cart import add_to_cart, get_current_cart, clear_cart, mark_as_paid, remove_cake
+from repositories.cart import add_to_cart, get_current_cart, clear_cart, mark_as_paid, remove_cake, get_all_orders, \
+    mark_as_delivered, get_completed_orders
 from repositories.user import get_by_user_profile_id, get_by_user_id
 from schema.cart import Cart
 from services.cart.cartDto import CartDto
@@ -52,6 +53,36 @@ async def remove_one_cart_item(db: Session, cake_id: int, user_profile_id: int):
 async def mark_user_cart_as_paid(db: Session, user_profile_id: int):
     result = await mark_as_paid(db, user_profile_id)
     respond = Respond[bool]()
+    return respond.response(
+        body=result,
+        code=200,
+        message="Cart query successfully"
+    )
+
+
+async def mark_user_cart_as_delivered(db: Session, user_profile_id: int):
+    result = await mark_as_delivered(db, user_profile_id)
+    respond = Respond[bool]()
+    return respond.response(
+        body=result,
+        code=200,
+        message="Cart query successfully"
+    )
+
+
+async def get_all_cart_items(skip: int, limit: int, user_profile_id: int, db: Session):
+    result = await get_all_orders(db, skip, limit, user_profile_id)
+    respond = Respond[Cart]()
+    return respond.response(
+        body=result,
+        code=200,
+        message="Cart query successfully"
+    )
+
+
+async def get_all_completed_orders(skip: int, limit: int, user_profile_id: int, db: Session):
+    result = await get_completed_orders(db, skip, limit, user_profile_id)
+    respond = Respond[Cart]()
     return respond.response(
         body=result,
         code=200,

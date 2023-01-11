@@ -10,7 +10,7 @@ from schema.user import User
 from services.auth.dependency import firebase_authentication
 from services.cart.cartDto import CartDto
 from services.cart.dependency import add_to_user_cart, get_cart, clear_user_cart, mark_user_cart_as_paid, \
-    remove_one_cart_item
+    remove_one_cart_item, mark_user_cart_as_delivered, get_all_cart_items
 
 router = APIRouter(tags=['Cart'])
 baseUrl = "api/v1/cart"
@@ -26,7 +26,7 @@ async def add_to_cart(request: CartDto, db: Session = Depends(get_db),
     return response
 
 
-@router.get(f"/{baseUrl}", status_code=status.HTTP_200_OK, response_model=ResponseDTO[Cart])
+@router.get(f"/{baseUrl}/current", status_code=status.HTTP_200_OK, response_model=ResponseDTO[Cart])
 async def get(skip: int, limit: int, db: Session = Depends(get_db),  user: User = Depends(firebase_authentication)):
     response = await get_cart(skip, limit, user.user_id, db)
     return response
@@ -38,10 +38,17 @@ async def clear(user: HTTPAuthorizationCredentials = Depends(firebase_authentica
     return response
 
 
-@router.put(f"/{baseUrl}", status_code=status.HTTP_200_OK, response_model=ResponseDTO[bool])
+@router.put(f"/{baseUrl}/paid", status_code=status.HTTP_200_OK, response_model=ResponseDTO[bool])
 async def mark_as_paid(db: Session = Depends(get_db), user: HTTPAuthorizationCredentials  = Depends(firebase_authentication)):
     response = await mark_user_cart_as_paid(db, user.id)
     return response
+
+
+@router.put(f"/{baseUrl}/delivered", status_code=status.HTTP_200_OK, response_model=ResponseDTO[bool])
+async def mark_as_delivered(db: Session = Depends(get_db), user: HTTPAuthorizationCredentials  = Depends(firebase_authentication)):
+    response = await mark_user_cart_as_delivered(db, user.id)
+    return response
+
 
 @router.delete(f"/{baseUrl}/{cartId}", status_code=status.HTTP_200_OK, response_model=ResponseDTO[bool])
 async def remove_item(cart_id: int, db: Session = Depends(get_db), user: HTTPAuthorizationCredentials = Depends(firebase_authentication)):
