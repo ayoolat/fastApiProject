@@ -1,6 +1,6 @@
 from boto3 import Session
 
-from repositories.cart import add_to_cart, get_current_cart, clear_cart, mark_as_paid
+from repositories.cart import add_to_cart, get_current_cart, clear_cart, mark_as_paid, remove_cake
 from repositories.user import get_by_user_profile_id, get_by_user_id
 from schema.cart import Cart
 from services.cart.cartDto import CartDto
@@ -39,6 +39,16 @@ async def clear_user_cart(db: Session, user_profile_id: int):
     )
 
 
+async def remove_one_cart_item(db: Session, cake_id: int, user_profile_id: int):
+    result = await remove_cake(db, cake_id, user_profile_id)
+    respond = Respond[bool]()
+    return respond.response(
+        body=result,
+        code=200,
+        message="Cart item removed successfully"
+    )
+
+
 async def mark_user_cart_as_paid(db: Session, user_profile_id: int):
     result = await mark_as_paid(db, user_profile_id)
     respond = Respond[bool]()
@@ -47,4 +57,3 @@ async def mark_user_cart_as_paid(db: Session, user_profile_id: int):
         code=200,
         message="Cart query successfully"
     )
-

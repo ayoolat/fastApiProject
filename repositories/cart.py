@@ -20,17 +20,30 @@ async def add_to_cart(payload: CartDto, db: Session):
 
 async def get_current_cart(db: Session, skip: int, limit: int, user_profile_id: int):
     cart = db.query(Cart)\
-        .filter(Cart.paid is False)\
-        .filter( Cart.user_profile_id == "")\
+        .filter(Cart.user_profile_id == user_profile_id)\
+        .filter(Cart.paid == False)\
         .offset(limit * (skip - 1))\
         .limit(limit)\
         .all()
-    print(cart)
     return cart
 
 
+async def remove_cake(db: Session, cart_id: int, user_profile_id: int):
+    cart = db.query(Cart)\
+        .filter(Cart.user_profile_id == user_profile_id)\
+        .filter(Cart.paid == False)\
+        .filter(Cart.id == cart_id)\
+        .first()
+    db.delete(cart)
+    db.commit()
+    return True
+
+
 async def clear_cart(db: Session, user_profile_id: int):
-    carts = db.query(Cart).filter(Cart.user_profile_id == user_profile_id).all()
+    carts = db.query(Cart)\
+        .filter(Cart.user_profile_id == user_profile_id)\
+        .filter(Cart.paid == False)\
+        .all()
     for cart in carts:
         db.delete(cart)
     db.commit()
@@ -38,20 +51,19 @@ async def clear_cart(db: Session, user_profile_id: int):
 
 
 async def mark_as_paid(db: Session, user_profile_id: int):
-    carts = db.query(Cart).filter(Cart.user_profile_id == user_profile_id).all()
+    carts = db.query(Cart)\
+        .filter(Cart.user_profile_id == user_profile_id)\
+        .filter(Cart.paid == False)\
+        .all()
     for cart in carts:
-        await cart_update(db, cart)
+        cart.paid = True
+        cart_update(db, cart)
     db.commit()
     return True
 
 
-async def cart_update(db: Session, payload: Cart):
-    cart = await db.query(Cart).filter(Cart.id == payload.id).first()
-    cart_data = payload.dict(exclude_unset=True)
-    for key, value in cart_data.items():
-        setattr(cart, key, value)
-
-    db.add(cart)
+def cart_update(db: Session, payload: Cart):
+    db.add(payload)
     db.commit()
-    db.refresh(cart)
-    return cart_data
+    db.refresh(payload)
+    return payload
